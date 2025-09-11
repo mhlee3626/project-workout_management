@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오운완(테스트)</title>
+    <style>
+        .individual-char1 {
+            font-size: 50px;
+            /* 기본 글자 크기 설정 */
+            display: inline-block;
+            transition: font-size 0.3s ease;
+            padding-bottom: 110px;
+            /* 글자 크기 변경에 애니메이션 적용 (선택 사항) */
+        }
+
+        .individual-char2 {
+            font-size: 25px;
+            /* 기본 글자 크기 설정 */
+            display: inline-block;
+            transition: font-size 0.3s ease;
+            padding-bottom: 110px;
+            /* 글자 크기 변경에 애니메이션 적용 (선택 사항) */
+        }
+
+        .my-button {
+            width: 150px;
+            height: 30px;
+            display: inline-block;
+            /* padding: 10px 20px; */
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            border: 2px solid #3498db;
+            color: #3498db;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .my-button:hover {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .mytitle {
+            color: black;
+            width: 450px;
+            height: 150px;
+            background-image: url('{{ url_for("static", filename=image_path) }}');
+            background-position: top 130px center;
+            background-size: 450px;
+            /* border-radius: 20px; */
+            text-align: center;
+            /* padding-top: 60px; */
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-container {
+            margin: 10px;
+        }
+
+        .toggle-button {
+            cursor: pointer;
+            background-color: #3498db;
+            color: #fff;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .toggle-button2 {
+            cursor: pointer;
+            background-color: #35df87;
+            color: #fff;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+        }
+        .toggle-button3 {
+            cursor: pointer;
+            background-color: #005e13;
+            color: #fff;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .nested-toggle-container {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .exercise-settings {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .toolbar {
+            margin-top: 10px;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .container {
+            padding: 20px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        br {
+        line-height: 20; /* Adjust the line height as needed */
+        }
+        #closeButton {
+            position: fixed;
+            top: 10px; /* Adjust top position as needed */
+            right: 10px; /* Adjust right position as needed */
+            z-index: 9999; /* Ensure it's above other content */
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="mytitle">
+        <span class="individual-char1">오</span>
+        <span class="individual-char2">늘</span>
+        <span class="individual-char1">운</span>
+        <span class="individual-char2">동</span>
+        <span class="individual-char1">완</span>
+        <span class="individual-char2">료</span>
+    </div>
+
+
+    <div id="exercisePopup" class="popup">
+        <!-- Add content for your popup here -->
+        <h2 id="exerciseTitle"></h2>
+        <table id="exerciseTable">
+            <!-- Popup content dynamically generated here -->
+        </table>
+        <button onclick="confirmExercise()">저장</button>
+        <button onclick="showExercise()">기록 보기</button>
+    </div>
+
+    <div id="foodPopup" class="popup">
+        <!-- Add content for your popup here -->
+        <h2 id="foodTitle"></h2>
+        <table id="foodTable">
+            <!-- Popup content dynamically generated here -->
+        </table>
+        <button onclick="confirmFood()">저장</button>
+    </div>
+
+    <div id="addfoodPopup" class="popup">
+        <!-- Add content for your popup here -->
+        <h2 id="foodTitle"></h2>
+        <table id="addfoodTable">
+            <!-- Popup content dynamically generated here -->
+        </table>
+        <button onclick="confirmAddFood()">추가</button>
+    </div>
+
+    <div id="addPopup" class="popup">
+        <!-- Add content for your popup here -->
+        <h2 id="Title"></h2>
+        <table id="addTable">
+            <!-- Popup content dynamically generated here -->
+        </table>
+        <button onclick="confirmAdd()">추가</button>
+    </div>
+
+    <div class="container">
+        <td><label><b>현재 체중은</b></label></td>
+        <td><input type="text" id="body_weight" size=5></td>
+        <td><label for="body_weight"><b>kg이고</b></label></td>
+        <p>
+
+            <td><label><b>일주일에 운동을</b></label></td>
+            <select id="how_many_week">
+                <option value=3>3~5회</option>
+                <option value=2>1~3회</option>
+                <option value=1>0~1회</option>
+            </select>
+            <td><label><b>하고</b></label></td>
+
+            <td><label><b>체중을</b></label></td>
+            <select id="body_status">
+                <option value=decrease>감량</option>
+                <option value=increase>증량</option>
+                <option value=maintain>유지</option>
+            </select>
+            <td><label><b>할래요</b></label></td>
+
+            <button class="toggle-button" onclick="confirmBodyweight()" style="margin-bottom: 10px;  padding: 3px 5px;">확인</button>
+        </p>
+
+    </div>
+    
+    <div class="container">
+        <h1>운동</h1>
+
+
+        <div class="toggle-container">
+
+            {% for target_part in ['등', '가슴', '다리', '어깨', '팔', '전신'] %}
+                <button id="toggleButton" class="toggle-button" onclick='toggleMain("{{ target_part }}")'>{{ target_part }}</button>
+                <div id="{{ target_part }}" class="nested-toggle-container">
+                    {% for b in body_list %}
+                        {% if b[0] == target_part %}
+                            <button class="toggle-button2" onclick="openExercisePopup('{{ b[1] }}')" style="margin-bottom: 10px;">{{ b[1] }}</button>
+                        {% endif %}
+                    {% endfor %}
+                    <button class="toggle-button3" id='{{ target_part }}-exercise-button' onclick="openAddExercisePopup('{{ target_part }}')"
+                        style="margin-bottom: 10px;margin-left:10px">+</button>
+                </div>
+            {% endfor %}
+
+        </div>
+        
+        <h1>식단</h1>
+        <div class="toggle-container">
+
+            <button id="toggleButton" class="toggle-button" onclick='toggleMain("food1")'>식단-1</button>
+            <div id="food1" class="nested-toggle-container">
+                
+                {% for food in food_list %}
+                <button class="toggle-button2" onclick="openFoodPopup('{{ food[0] }}')" style="margin-bottom: 10px;">{{ food[0] }}</button>
+                {% endfor %}
+                <button class="toggle-button3" id='food-button' onclick="openAddFoodPopup('음식 추가')" style="margin-bottom: 10px; margin-left:10px">+</button>
+
+            </div>
+
+        </div>
+    </div>   
+
+    </div>
+
+    <div class="container">
+        <h3>'오늘도 증량 기록 후 한발짝 나가보자고'</h3>
+        <!-- <img src="{{ url_for('static', filename=image_path2) }}" width="200" height="200"><br> -->
+        <button type="submit" class="my-button" onclick="showFood()">식단 기록 체크</button>
+        <img id="displayImage" style="max-width: 100%; height: auto;">
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        function showExercise() {
+            var xhr = new XMLHttpRequest();
+            var exerciseTitle = document.getElementById("exerciseTitle").innerHTML;
+
+            xhr.open("GET", "/get_exercise_data?title=" + exerciseTitle, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var responseData = JSON.parse(xhr.responseText);
+                    var containerDiv = document.createElement('div');
+                    var newWindow = window.open('', '_blank');
+                    newWindow.document.title = `${exerciseTitle} 기록`;
+
+                    if (responseData.img_data) {
+                        // 이미지 추가
+                        var img = new Image();
+                        img.src = 'data:image/png;base64,' + responseData.img_data;
+
+                        // div에 h1과 이미지 추가
+                        containerDiv.appendChild(img);
+
+                        // 새 창의 body에 div 추가
+                        newWindow.document.body.appendChild(containerDiv);
+
+                        // 메모 데이터 추가
+                        var memoData = responseData.date_memo_dict;
+                        console.log(memoData)
+                        for (var date in memoData) {
+                            // None이 아닌 경우에만 메모를 표시
+                            if (memoData[date] !== null) {
+                                var memo = document.createElement('p');
+                                memo.textContent = date + ': ' + memoData[date];
+                                newWindow.document.body.appendChild(memo);
+                            }
+                        }
+                    } else if (responseData.error) {
+                        console.error(responseData.error);
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+
+        function showFood() {
+            var xhr = new XMLHttpRequest();
+
+            xhr.open("GET", "/get_food_data", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var responseData = JSON.parse(xhr.responseText);
+                    var containerDiv = document.createElement('div');
+                    var newWindow = window.open('', '_blank');
+                    newWindow.document.title = `식단 기록`;
+                    if (responseData.img_data) {
+                        // 이미지 추가
+                        var img = new Image();
+                        img.src = 'data:image/png;base64,' + responseData.img_data; 
+                        containerDiv.appendChild(img);
+                        // 오늘 먹은 음식 정보 추가
+                        var todayFoodMsg = document.createElement('p');
+                        todayFoodMsg.textContent = ` \n -오늘 먹은 것-\n`;
+                        for (var foodName in responseData.today_food) {
+                            todayFoodMsg.textContent += ` ${foodName}: ${responseData.today_food[foodName]}g\n`;};
+
+                        // 칼로리 및 단백질 정보 추가
+                        var alertMsg = document.createElement('p');
+                        if (responseData.alert_calories == null || responseData.alert_protein == null) {
+                            alertMsg.textContent = `${responseData.today} \n 오늘 체중과 운동 상태를 등록해주세요.`;
+                        } else {
+                            alertMsg.textContent = `${responseData.today} \n 칼로리: ${responseData.alert_calories} kcal \n 단백질: ${responseData.alert_protein} g이 더 필요해요\n`;
+                        }
+                        containerDiv.appendChild(alertMsg);
+
+
+
+                        // 새 창의 body에 div 추가
+                        newWindow.document.body.appendChild(containerDiv);
+
+                        // 팝업으로 todayFoodMsg 표시
+                        newWindow.alert(` ${alertMsg.textContent} ${todayFoodMsg.textContent}`);
+                    } else if (responseData.error) {
+                        console.error(responseData.error);
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        function convertAndDisplayImage() {
+            var fileInput = $('#file')[0].files[0];
+
+            var formData = new FormData();
+            formData.append('file', fileInput);
+
+            $.ajax({
+                url: '/convert',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data.result === 'success') {
+                        // Update the source of the image element with the received base64 image data
+                        $('#displayImage').attr('src', 'data:image/png;base64,' + data.image);
+                    } else {
+                        console.error('Error:', data.msg);
+                    }
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
+
+            // Prevent the form from submitting and the page from reloading
+            return false;
+        }
+
+        function confirmExercise() {
+            alert("저장했어요");
+            var exercisePopup = document.getElementById("exercisePopup");
+            // Get exercise name
+            var exercise = document.getElementById('exerciseTitle').innerText;
+
+
+            // Get exercise details from form inputs
+            var weight = document.getElementById(`${exercise}_weight`).value;
+            var reps = document.getElementById(`${exercise}_reps`).value;
+            var sets = document.getElementById(`${exercise}_sets`).value;
+            var depth = document.getElementById(`${exercise}_depth`).value;
+            var width = document.getElementById(`${exercise}_width`).value;
+            var angle = document.getElementById(`${exercise}_angle`).value;
+            var rest = document.getElementById(`${exercise}_rest`).value;
+            var memo = document.getElementById(`${exercise}_memo`).value;
+
+            var currentTime = new Date();
+            console.log(currentTime)
+
+            var options = {
+                timeZone: 'Asia/Seoul',  // Set the time zone to Korean Standard Time
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+            };
+            var formattedTime = currentTime.toLocaleString('en-US', options)
+                .replace(/(\d+)\/(\d+)\/(\d+), (\d+):(\d+):(\d+) (AM|PM)/,
+                    function (match, month, day, year, hours, minutes, seconds, ampm) {
+                        var monthNum = ("0" + month).slice(-2);
+                        var dayNum = ("0" + day).slice(-2);
+                        var hourNum = (ampm === 'PM' && hours < 12) ? parseInt(hours, 10) + 12 : hours;
+                        var hour24 = ("0" + hourNum).slice(-2);
+                        return year + "-" + monthNum + "-" + dayNum + " " + hour24 + ":" + minutes + ":" + seconds;
+                    });
+            console.log(formattedTime)
+
+            // Send data to the server
+            $.ajax({
+                url: '/confirm-exercise',
+                type: 'POST',
+                data: {
+                    name: exercise,
+                    weight: weight,
+                    reps: reps,
+                    sets: sets,
+                    depth: depth,
+                    width: width,
+                    angle: angle,
+                    rest: rest,
+                    time: formattedTime,
+                    memo: memo
+                },
+                success: function (data) {
+                    // Handle success
+                    console.log('Exercise data sent to the server.');
+                },
+                error: function (error) {
+                    // Handle error
+                    console.error('Error sending exercise data:', error);
+                }
+            });
+
+            exercisePopup.style.display = "none";
+        }
+
+        function confirmFood() {
+            alert("저장했어요");
+            var food = document.getElementById('foodTitle').innerText;
+            var foodPopup = document.getElementById("foodPopup");
+            foodPopup.style.display = "none";
+            var weight = document.getElementById(`${food}_weight`).value;
+
+            var currentTime = new Date();
+            console.log(currentTime)
+
+            var options = {
+                timeZone: 'Asia/Seoul',  // Set the time zone to Korean Standard Time
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+            };
+            var formattedTime = currentTime.toLocaleString('en-US', options)
+                .replace(/(\d+)\/(\d+)\/(\d+), (\d+):(\d+):(\d+) (AM|PM)/,
+                    function (match, month, day, year, hours, minutes, seconds, ampm) {
+                        var monthNum = ("0" + month).slice(-2);
+                        var dayNum = ("0" + day).slice(-2);
+                        var hourNum = (ampm === 'PM' && hours < 12) ? parseInt(hours, 10) + 12 : hours;
+                        var hour24 = ("0" + hourNum).slice(-2);
+                        return year + "-" + monthNum + "-" + dayNum + " " + hour24 + ":" + minutes + ":" + seconds;
+                    });
+            console.log(formattedTime)
+            // Send data to the server
+            $.ajax({
+                url: '/confirm-food',
+                type: 'POST',
+                data: {
+                    name: food,
+                    weight: weight,
+                    time: formattedTime
+                },
+                success: function (data) {
+                    // Handle success
+                    console.log('Food data sent to the server.');
+                },
+                error: function (error) {
+                    // Handle error
+                    console.error('Error sending food data:', error);
+                }
+            });
+        }
+
+        function confirmBodyweight() {
+            alert("확인했어요");
+
+            var bodyweight = document.getElementById("body_weight").value;
+            var status = document.getElementById("body_status").value;
+            var how_many_week = document.getElementById("how_many_week").value;
+
+            var currentTime = new Date();
+            console.log(currentTime)
+
+            var options = {
+                timeZone: 'Asia/Seoul',  // Set the time zone to Korean Standard Time
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+            };
+            var formattedTime = currentTime.toLocaleString('en-US', options)
+                .replace(/(\d+)\/(\d+)\/(\d+), (\d+):(\d+):(\d+) (AM|PM)/,
+                    function (match, month, day, year, hours, minutes, seconds, ampm) {
+                        var monthNum = ("0" + month).slice(-2);
+                        var dayNum = ("0" + day).slice(-2);
+                        var hourNum = (ampm === 'PM' && hours < 12) ? parseInt(hours, 10) + 12 : hours;
+                        var hour24 = ("0" + hourNum).slice(-2);
+                        return year + "-" + monthNum + "-" + dayNum + " " + hour24 + ":" + minutes + ":" + seconds;
+                    });
+            console.log(formattedTime)
+            // Send data to the server
+            $.ajax({
+                url: '/confirm-bodyweight',
+                type: 'POST',
+                data: {
+                    bodyweight: bodyweight,
+                    status: status,
+                    how_many_week:how_many_week,
+                    time: formattedTime
+                },
+                success: function (data) {
+                    // Handle success
+                    console.log('Food data sent to the server.');
+                },
+                error: function (error) {
+                    // Handle error
+                    console.error('Error sending food data:', error);
+                }
+            });
+        }
+ 
+        function confirmAddFood() {
+            alert("추가했어요");
+            var food_name = document.getElementById("food_name").value;
+            var food_calory = document.getElementById("food_calory").value;
+            var food_protein= document.getElementById("food_protein").value;
+
+            // Send data to the server
+            $.ajax({
+                url: '/confirm-add-food',
+                type: 'POST',
+                data: {
+                    food_name: food_name,
+                    food_calory: food_calory,
+                    food_protein: food_protein
+                },
+                success: function (data) {
+                    // Handle success
+                    console.log('Food data added to the server.');
+                    
+                    // Create a new button element
+                    var newRow = '<button class="toggle-button2" onclick="openFoodPopup(\'' + food_name + '\')" style="margin-bottom: 10px;">' + food_name + '</button>';
+
+                    // // Append the new button to the container
+                    // $('#nestedToggleContainerfood1').append(newRow);
+                    // Insert the new button before the "+" button
+                    $(newRow).insertBefore('#food-button');
+                },
+                error: function (error) {
+                    // Handle error
+                    console.error('Error sending food data:', error);
+                }
+            });
+
+        }
+
+        function confirmAdd() {
+            alert("추가했어요");
+            var name = document.getElementById("new_exercise").value;
+            var target=document.getElementById("new_target").innerText;
+
+            console.log('dd',name,target)
+            // Send data to the server
+            $.ajax({
+                url: '/confirm-add',
+                type: 'POST',
+                data: {
+                    target: target,
+                    name: name
+                },
+                success: function (data) {
+                    // Handle success
+                    console.log('new data added to the server.');
+                    
+                    // Create a new button element
+                    var newRow = '<button class="toggle-button2" onclick="openExercisePopup(name)" style="margin-bottom: 10px;">' + name + '</button>';
+
+                    // // Append the new button to the container
+                    $(newRow).insertBefore(`#${target}-exercise-button`);
+                    // Insert the new button before the "+" button
+
+                },
+                error: function (error) {
+                    // Handle error
+                    console.error('Error sending new data:', error);
+                }
+            });
+
+            }
+
+        // function addButtonWithFoodName(foodName) {
+        //     var buttonElement = document.createElement("button");
+        //     buttonElement.className = "toggle-button3";
+        //     buttonElement.innerHTML = foodName;
+        //     buttonElement.style.marginBottom = "10px";
+        //     buttonElement.addEventListener("click", function() {
+        //         openAddFoodPopup(foodName);
+        //     });
+        //     document.body.appendChild(buttonElement);
+        //     }
+
+
+        // function addButtonToDiv(divId) {
+        //     // 지정된 ID를 가진 div 요소를 가져옵니다.
+
+        //     var food_name=document.getElementById("food_name").value;
+        //     var divElement = document.getElementById(divId);
+
+        //     // 새 버튼 요소를 생성합니다.
+        //     var buttonElement = document.createElement("button");
+        //     buttonElement.className = "toggle-button3";
+        //     buttonElement.innerHTML = food_name;
+        //     buttonElement.style.marginBottom = "10px";
+
+        //     // 버튼을 클릭할 때마다 무언가를 수행하려면 아래와 같이 이벤트 핸들러를 추가합니다.
+        //     buttonElement.addEventListener("click", function() {
+        //         openFoodPopup(food_name)
+        //     });
+
+        //     // 생성된 버튼 요소를 div에 추가합니다.
+        //     divElement.appendChild(buttonElement);
+        //     }
+        // function addFoodButton() {
+            
+        //     var buttonContent = `
+        //             <tr>
+        //                 <td><label for="weight">중량(g):</label></td>
+        //                 <td><input type="text" id="food_name"></td>
+        //                 <button id="closeButton" onclick="closePopup('foodPopup')">X</button>
+        //             </tr>`;
+
+        // }  
+
+
+        function openExercisePopup(name) {
+            document.getElementById('exerciseTitle').innerText = name;
+            // Dynamically generate table content based on exercise
+            var tableContent = `
+                    <tr>
+
+                        <tr>
+                            <td><label for="weight">중량(kg):</label></td>
+                            <td><input type="text" id="${name}_weight" size=5></td>
+                        </tr>
+                        <tr>
+                            <td><label for="reps">반복 횟수:</label></td>
+                            <td><input type="text" id="${name}_reps" size=5></td>
+                        </tr>
+                        <tr>
+                            <td><label for="sets">셋트 수:</label></td>
+                            <td><input type="text" id="${name}_sets" size=5></td>
+                        </tr>
+                        <tr>
+                            <td class="toolbar">
+                                <label for="depth">깊이:</label>
+                            </td>
+                            <td>
+                                <select id="${name}_depth">
+                                    <option value=2>보통</option>
+                                    <option value=3>깊게</option>
+                                    <option value=1>얕게</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="toolbar">
+                                <label for="width">너비:</label>
+                            </td>
+                            <td>
+                                <select id="${name}_width">
+                                    <option value=2>보통</option>
+                                    <option value=3>넓게</option>
+                                    <option value=1>좁게</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="toolbar">
+                                <label for="angle">각도:</label>
+                            </td>
+                            <td>
+                                <select id="${name}_angle">
+                                    <option value=2>플랫</option>
+                                    <option value=3>인클라인</option>
+                                    <option value=1>디클라인</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="rest">휴식 시간(분):</label></td>
+                            <td><input type="text" id="${name}_rest" size=5></td>
+                        </tr>
+                        <tr>
+                            <textarea id="${name}_memo" cols="20" rows="1" placeholder='메모'></textarea>
+                        </tr>
+                        
+                        <button id="closeButton" onclick="closePopup('exercisePopup')">X</button>
+                            
+
+                    </tr>`;
+
+            document.getElementById('exerciseTable').innerHTML = tableContent;
+
+            // Show the popup
+            document.getElementById('exercisePopup').style.display = 'block';
+            // Position the close button to the top-right corner
+        }
+
+        function openFoodPopup(food) {
+            document.getElementById('foodTitle').innerText = food;
+
+            // Dynamically generate table content based on food
+            var tableContent = `
+                    <tr>
+                        <td><label for="weight">중량(g):</label></td>
+                        <td><input type="text" id="${food}_weight" size=5></td>
+                        <button id="closeButton" onclick="closePopup('foodPopup')">X</button>
+                    </tr>`;
+
+            document.getElementById('foodTable').innerHTML = tableContent;
+
+            // Show the popup
+            document.getElementById('foodPopup').style.display = 'block';
+        }
+
+        function openAddFoodPopup(food) {
+            document.getElementById('foodTitle').innerText = food;
+
+            // Dynamically generate table content based on food
+            var tableContent = `
+                    <tr>
+                        <td><label>이름:</label></td>
+                        <td><input type="text" id="food_name" size=5></td>
+                    </tr>
+                    <tr>
+                        <td><label>칼로리 (100g 기준):</label></td>
+                        <td><input type="text" id="food_calory" size=5></td>
+                        <td><label>kcal</label></td>
+                    </tr>
+                    <tr>
+                        <td><label>단백질 (100g 기준):</label></td>
+                        <td><input type="text" id="food_protein" size=5></td>
+                        <td><label>g</label></td>
+                    </tr>
+
+                        <button id="closeButton" onclick="closePopup('addfoodPopup')">X</button>
+                    `;
+
+            document.getElementById('addfoodTable').innerHTML = tableContent;
+
+            // Show the popup
+            document.getElementById('addfoodPopup').style.display = 'block';
+        }
+
+        function openAddExercisePopup(target) {
+
+            // document.getElementById("Title").innerText = target;
+            // Dynamically generate table content based on food
+            var tableContent = `
+                    <tr>
+                        <td><label id='new_target'>${target}</label></td>
+                        
+                    </tr>
+                        <td><input type="text" id="new_exercise" size=8></td>
+                        <button id="closeButton" onclick="closePopup('addPopup')">X</button>
+                        
+                    `;
+
+            document.getElementById('addTable').innerHTML = tableContent;
+
+            // Show the popup
+            document.getElementById('addPopup').style.display = 'block';
+        }
+
+        function toggleMain(area) {
+            var nestedToggleContainer = document.getElementById(area);
+            nestedToggleContainer.style.display = (nestedToggleContainer.style.display === "none") ? "block" : "none";
+        }
+
+        function closePopup(name) {
+            // Hide the popup
+            document.getElementById(`${name}`).style.display = 'none';
+            }
+
+
+
+
+    </script>
+</body>
