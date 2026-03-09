@@ -96,5 +96,3 @@
 개발 과정에서 기능 요구사항을 세분화하고, 테스트 중 도출된 아이디어를 반영하여 기능을 확장하였습니다. 
 이를 통해 클라이언트의 니즈를 구조화하고 실질적인 기능으로 구현하는 경험을 하였습니다.
 
-# project-workout_management
-# project-workout_management
